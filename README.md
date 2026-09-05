@@ -41,3 +41,9 @@ Character sprites are embedded directly into the hero page as PNG data URLs, so 
 - В рейтинге показываются место, имя, класс, уровень, серия и Quest Score.
 - Глобального рейтинга нет.
 - Экипировка не добавлялась.
+
+
+## 2.7.2
+- Fixed global leaderboard using a Redis sorted-set index.
+- Existing profiles are migrated into the leaderboard index on first leaderboard request if needed.
+- Normal profile sync now updates the leaderboard automatically.

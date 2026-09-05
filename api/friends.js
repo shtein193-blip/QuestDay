@@ -33,15 +33,17 @@ async function getProfile(id) {
 async function scanUserIds() {
   const ids = [];
   let cursor = '0';
-  // Upstash REST accepts Redis command arguments as path segments.
-  // The previous implementation used query parameters, which can return an
-  // empty/invalid scan response and made the leaderboard appear unavailable.
+  // Use the REST API command-body form. This avoids ambiguity around SCAN
+  // optional arguments in URL paths on some serverless/proxy combinations.
   for (let page = 0; page < 50; page++) {
-    const r = await fetch(`${url}/scan/${encodeURIComponent(cursor)}/match/${encodeURIComponent('questday:user:*')}/count/100`, {
-      headers: { Authorization: `Bearer ${token}` }
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(['SCAN', cursor, 'MATCH', 'questday:user:*', 'COUNT', 100])
     });
     if (!r.ok) throw new Error(`KV scan ${r.status}`);
     const j = await r.json();
+    if (j.error) throw new Error(`KV scan: ${j.error}`);
     const result = Array.isArray(j.result) ? j.result : [];
     const next = String(result[0] ?? '0');
     const keys = Array.isArray(result[1]) ? result[1] : [];
@@ -52,9 +54,36 @@ async function scanUserIds() {
   return [...new Set(ids)];
 }
 
+async function updateLeaderboard(id, score) {
+  const n = Number(score || 0);
+  // Keep a sorted-set index so future leaderboard reads are fast and do not
+  // need to scan every profile. Zero-score users are removed from the index.
+  const r = await fetch(`${url}/zadd/questday:leaderboard/${encodeURIComponent(n)}/${encodeURIComponent(String(id))}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!r.ok) throw new Error(`KV zadd ${r.status}`);
+}
+
+async function getLeaderboardIds(limit = 100) {
+  const r = await fetch(`${url}/zrevrange/questday:leaderboard/0/${Math.max(0, limit - 1)}/WITHSCORES`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!r.ok) throw new Error(`KV zrevrange ${r.status}`);
+  const j = await r.json();
+  if (j.error) throw new Error(`KV zrevrange: ${j.error}`);
+  const result = Array.isArray(j.result) ? j.result : [];
+  const ids = [];
+  for (let i = 0; i < result.length; i += 2) {
+    const id = String(result[i]);
+    if (/^\d+$/.test(id)) ids.push(id);
+  }
+  return ids;
+}
+
 async function setProfile(id, profile) {
   profile.updatedAt = Date.now();
   await kv('set', `questday:user:${id}`, JSON.stringify(profile));
+  if (Number(profile.questScore || 0) > 0) await updateLeaderboard(id, profile.questScore);
 }
 
 function publicPlayer(id, profile) {
@@ -150,9 +179,19 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'GET') {
-      // Global leaderboard: include every Telegram user who has a saved profile
-      // and has earned at least 1 Quest Score.
-      const ids = await scanUserIds();
+      // Global leaderboard: use the sorted-set index first. If it is empty
+      // (for example immediately after deploying this feature), migrate existing
+      // profiles once by scanning the user keys and seeding the index.
+      if (Number(me?.questScore || 0) > 0) await updateLeaderboard(user.id, me.questScore);
+      let ids = await getLeaderboardIds(100);
+      if (!ids.length) {
+        const allIds = await scanUserIds();
+        for (const id of allIds) {
+          const profile = id === String(user.id) ? me : await getProfile(id);
+          if (profile && Number(profile.questScore || 0) > 0) await updateLeaderboard(id, profile.questScore);
+        }
+        ids = await getLeaderboardIds(100);
+      }
       const players = [];
       for (const id of ids) {
         const profile = id === String(user.id) ? me : await getProfile(id);

@@ -30,6 +30,15 @@ async function kv(command, ...args) {
   return r.json();
 }
 
+async function updateLeaderboard(id, score) {
+  const n = Number(score || 0);
+  if (n <= 0) return;
+  const r = await fetch(`${url}/zadd/questday:leaderboard/${encodeURIComponent(n)}/${encodeURIComponent(String(id))}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!r.ok) throw new Error(`KV leaderboard ${r.status}`);
+}
+
 export default async function handler(req) {
   if (!url || !token || !process.env.TELEGRAM_BOT_TOKEN) {
     return Response.json({ error: 'Cloud storage is not configured. Add KV_REST_API_URL, KV_REST_API_TOKEN and TELEGRAM_BOT_TOKEN.' }, { status: 503 });
@@ -71,6 +80,7 @@ export default async function handler(req) {
       }
       body.data.user = { ...(body.data.user || {}), id: user.id, name: [user.first_name, user.last_name].filter(Boolean).join(' ') || body.data.user?.name || 'Искатель', username: user.username || null, language: user.language_code || 'ru' };
       await kv('set', key, JSON.stringify(body.data));
+      await updateLeaderboard(user.id, body.data.questScore);
       return Response.json({ ok: true, data: body.data });
     }
     return Response.json({ error: 'Method not allowed' }, { status: 405, headers: { Allow: 'GET, POST' } });
