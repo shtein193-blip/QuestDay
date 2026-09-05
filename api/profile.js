@@ -49,11 +49,26 @@ export default async function handler(req) {
     if (req.method === 'GET') {
       const result = await kv('get', key);
       const data = result.result ? JSON.parse(result.result) : null;
+      if (data && Number(data.pendingReferralCoins || 0) > 0) {
+        data.coins = Number(data.coins || 0) + Number(data.pendingReferralCoins || 0);
+        data.pendingReferralCoins = 0;
+        data.updatedAt = Date.now();
+        await kv('set', key, JSON.stringify(data));
+      }
       return Response.json({ ok: true, data });
     }
     if (req.method === 'POST') {
       const body = await req.json();
       if (!body?.data || typeof body.data !== 'object') return Response.json({ error: 'Invalid data' }, { status: 400 });
+      const existing = await kv('get', key);
+      const existingData = existing.result ? JSON.parse(existing.result) : {};
+      body.data.friends = Array.isArray(existingData.friends) ? existingData.friends.map(String) : (Array.isArray(body.data.friends) ? body.data.friends.map(String) : []);
+      body.data.referral = existingData.referral || body.data.referral || { invitedBy: null, rewardClaimed: false };
+      const pendingReferralCoins = Number(existingData.pendingReferralCoins || 0);
+      if (pendingReferralCoins > 0) {
+        body.data.coins = Number(body.data.coins || 0) + pendingReferralCoins;
+        body.data.pendingReferralCoins = 0;
+      }
       body.data.user = { ...(body.data.user || {}), id: user.id, name: [user.first_name, user.last_name].filter(Boolean).join(' ') || body.data.user?.name || 'Искатель', username: user.username || null, language: user.language_code || 'ru' };
       await kv('set', key, JSON.stringify(body.data));
       return Response.json({ ok: true, data: body.data });

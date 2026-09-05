@@ -18,3 +18,26 @@ Telegram Mini App для ежедневных RPG-квестов.
 - `TELEGRAM_BOT_TOKEN`
 
 Структура проекта не изменилась: `index.html` и `api/profile.js`.
+
+## QuestDay 2.6 — герой, Quest Score, награды и босс
+- На странице «Герой» автоматически показывается мужская или женская модель выбранного класса из `assets/characters/`.
+- Класс по-прежнему определяется автоматически по характеристикам и цели профиля.
+- Добавлен Quest Score — отдельный показатель прогресса, не равный XP.
+- Достижения теперь дают Quest Coins и некоторые открывают титулы.
+- Добавлен еженедельный личный босс «Дракон Прокрастинации»: выполненные квесты наносят ему урон.
+- За победу над боссом выдаются Quest Coins и титул.
+- Экипировка, магазин и проверка выполнения квестов пока не добавлялись.
+
+
+### QuestDay 2.6.1
+Character sprites are embedded directly into the hero page as PNG data URLs, so the hero models render even if Vercel/GitHub static asset paths are misconfigured. The exact supplied 8 character files are retained in assets/characters/ as well.
+
+
+## QuestDay 2.7 — Друзья и рейтинг
+- Добавлен рейтинг среди друзей по Quest Score.
+- Добавлены взаимные связи друзей через Telegram Mini App deep link `startapp=ref_<telegram_user_id>`.
+- За нового друга, который впервые запускает QuestDay по приглашению, пригласивший получает +100 Quest Coins.
+- Повторное открытие ссылки не начисляет награду повторно.
+- В рейтинге показываются место, имя, класс, уровень, серия и Quest Score.
+- Глобального рейтинга нет.
+- Экипировка не добавлялась.
