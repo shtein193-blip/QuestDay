@@ -47,3 +47,7 @@ Character sprites are embedded directly into the hero page as PNG data URLs, so 
 - Fixed global leaderboard using a Redis sorted-set index.
 - Existing profiles are migrated into the leaderboard index on first leaderboard request if needed.
 - Normal profile sync now updates the leaderboard automatically.
+
+
+### Global rating
+Every authenticated Mini App open registers the Telegram user in Redis set `questday:users`. The rating reads this directory and no longer depends on Redis SCAN. Players are shown after Quest Score becomes greater than 0.

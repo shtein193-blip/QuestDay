@@ -30,28 +30,21 @@ async function getProfile(id) {
   return r.result ? JSON.parse(r.result) : null;
 }
 
-async function scanUserIds() {
-  const ids = [];
-  let cursor = '0';
-  // Use the REST API command-body form. This avoids ambiguity around SCAN
-  // optional arguments in URL paths on some serverless/proxy combinations.
-  for (let page = 0; page < 50; page++) {
-    const r = await fetch(url, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(['SCAN', cursor, 'MATCH', 'questday:user:*', 'COUNT', 100])
-    });
-    if (!r.ok) throw new Error(`KV scan ${r.status}`);
-    const j = await r.json();
-    if (j.error) throw new Error(`KV scan: ${j.error}`);
-    const result = Array.isArray(j.result) ? j.result : [];
-    const next = String(result[0] ?? '0');
-    const keys = Array.isArray(result[1]) ? result[1] : [];
-    keys.forEach(k => { const m = /^questday:user:(\d+)$/.exec(String(k)); if (m) ids.push(m[1]); });
-    cursor = next;
-    if (cursor === '0') break;
-  }
-  return [...new Set(ids)];
+async function registerUser(id) {
+  const r = await fetch(`${url}/sadd/questday:users/${encodeURIComponent(String(id))}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!r.ok) throw new Error(`KV sadd ${r.status}`);
+}
+
+async function getRegisteredUserIds() {
+  const r = await fetch(`${url}/smembers/questday:users`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!r.ok) throw new Error(`KV smembers ${r.status}`);
+  const j = await r.json();
+  if (j.error) throw new Error(`KV smembers: ${j.error}`);
+  return Array.isArray(j.result) ? j.result.map(String).filter(id => /^\d+$/.test(id)) : [];
 }
 
 async function updateLeaderboard(id, score) {
@@ -122,6 +115,7 @@ export default async function handler(req, res) {
   if (!user?.id) return res.status(401).json({ error: 'Invalid Telegram init data' });
 
   try {
+    await registerUser(user.id);
     let me = await getProfile(user.id);
     const startParam = verified.startParam;
 
@@ -179,31 +173,25 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'GET') {
-      // Global leaderboard: use the sorted-set index first. If it is empty
-      // (for example immediately after deploying this feature), migrate existing
-      // profiles once by scanning the user keys and seeding the index.
+      // Global rating uses a dedicated player directory. No Redis SCAN is needed.
       if (Number(me?.questScore || 0) > 0) await updateLeaderboard(user.id, me.questScore);
-      let ids = await getLeaderboardIds(100);
-      if (!ids.length) {
-        const allIds = await scanUserIds();
-        for (const id of allIds) {
-          const profile = id === String(user.id) ? me : await getProfile(id);
-          if (profile && Number(profile.questScore || 0) > 0) await updateLeaderboard(id, profile.questScore);
-        }
-        ids = await getLeaderboardIds(100);
-      }
+      const registeredIds = await getRegisteredUserIds();
+      const indexedIds = await getLeaderboardIds(100);
+      const ids = [...new Set([...registeredIds, ...indexedIds])].slice(0, 500);
       const players = [];
       for (const id of ids) {
         const profile = id === String(user.id) ? me : await getProfile(id);
-        if (profile && Number(profile.questScore || 0) > 0) players.push(publicPlayer(id, profile));
+        if (profile && Number(profile.questScore || 0) > 0) {
+          players.push(publicPlayer(id, profile));
+          await updateLeaderboard(id, profile.questScore);
+        }
       }
       players.sort((a, b) => b.score - a.score || b.streak - a.streak || b.level - a.level || a.name.localeCompare(b.name, 'ru'));
       return res.status(200).json({ ok: true, players, playerCount: players.length });
     }
-
     return res.status(405).json({ error: 'Method not allowed' });
   } catch (error) {
     console.error('Friends API error:', error);
-    return res.status(500).json({ ok: false, error: 'Friends service error' });
+    return res.status(500).json({ ok: false, error: 'Friends service error', detail: error?.message ? String(error.message).slice(0, 160) : 'Unknown error' });
   }
 }

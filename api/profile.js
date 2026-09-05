@@ -30,6 +30,13 @@ async function kv(command, ...args) {
   return r.json();
 }
 
+async function registerUser(id) {
+  const r = await fetch(`${url}/sadd/questday:users/${encodeURIComponent(String(id))}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!r.ok) throw new Error(`KV users ${r.status}`);
+}
+
 async function updateLeaderboard(id, score) {
   const n = Number(score || 0);
   if (n <= 0) return;
@@ -55,6 +62,7 @@ export default async function handler(req) {
   const key = `questday:user:${user.id}`;
 
   try {
+    await registerUser(user.id);
     if (req.method === 'GET') {
       const result = await kv('get', key);
       const data = result.result ? JSON.parse(result.result) : null;
