@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QuestDay 2.0</title>
+  <title>QuestDay 2.1</title>
 
   <style>
     * {
@@ -14,20 +14,28 @@
       margin: 0;
       font-family: Arial, sans-serif;
       background: #0f172a;
-      color: white;
+      color: #fff;
+    }
+
+    button,
+    input,
+    select {
+      font-family: inherit;
     }
 
     button {
-      font-family: inherit;
+      cursor: pointer;
     }
 
     .app {
       max-width: 500px;
       margin: 0 auto;
-      padding: 22px 16px 100px;
+      padding: 20px 16px 100px;
     }
 
-    /* HEADER */
+    /* =========================
+       HEADER
+    ========================= */
 
     .header {
       margin-bottom: 20px;
@@ -39,29 +47,31 @@
     }
 
     .subtitle {
-      color: #94a3b8;
       margin-top: 6px;
+      color: #94a3b8;
     }
 
-    /* STATS */
+    /* =========================
+       STATS
+    ========================= */
 
     .stats {
       background: #1e293b;
-      border-radius: 22px;
-      padding: 20px;
-      margin-bottom: 22px;
       border: 1px solid #334155;
+      border-radius: 22px;
+      padding: 18px;
+      margin-bottom: 22px;
     }
 
-    .level {
+    .level-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
     }
 
-    .level-number {
-      font-size: 21px;
+    .level {
+      font-size: 20px;
       font-weight: bold;
     }
 
@@ -82,85 +92,432 @@
       height: 100%;
       background: #f59e0b;
       border-radius: 20px;
-      transition: width 0.4s ease;
+      transition: width .3s ease;
     }
 
     .streak {
-      margin-top: 16px;
+      margin-top: 14px;
       color: #fb923c;
       font-weight: bold;
     }
 
-    /* SECTIONS */
+    /* =========================
+       DATE SELECTOR
+    ========================= */
+
+    .date-selector {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      border: 1px solid #334155;
+      padding: 13px 15px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+
+    .date-selector button {
+      border: none;
+      background: #334155;
+      color: white;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      font-size: 20px;
+    }
+
+    .selected-date {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .selected-date-small {
+      color: #94a3b8;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    /* =========================
+       SECTION
+    ========================= */
 
     .section {
       margin-bottom: 25px;
     }
 
     h2 {
+      margin: 0 0 13px;
       font-size: 20px;
-      margin: 0 0 14px;
     }
 
-    /* QUESTS */
+    /* =========================
+       ADD BUTTON
+    ========================= */
+
+    .add-quest-button {
+      width: 100%;
+      border: none;
+      background: #f59e0b;
+      color: #111827;
+      padding: 15px;
+      border-radius: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 22px;
+    }
+
+    /* =========================
+       QUEST
+    ========================= */
 
     .quest {
       background: #1e293b;
       border: 1px solid #334155;
       border-radius: 17px;
-      padding: 16px;
-      margin-bottom: 12px;
-
+      padding: 15px;
+      margin-bottom: 11px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       gap: 12px;
-
-      transition: 0.2s;
     }
 
     .quest.completed {
-      opacity: 0.5;
+      opacity: .45;
     }
 
     .quest-info {
       flex: 1;
+      min-width: 0;
     }
 
     .quest-title {
+      font-weight: bold;
       font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 7px;
-    }
-
-    .quest-type {
-      font-size: 12px;
-      color: #94a3b8;
       margin-bottom: 6px;
+      word-wrap: break-word;
     }
 
-    .quest-reward {
+    .quest-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 7px;
+      border-radius: 7px;
+      background: #334155;
+      color: #cbd5e1;
+      font-size: 11px;
+    }
+
+    .xp-tag {
       color: #fbbf24;
-      font-size: 14px;
-      font-weight: bold;
     }
 
-    .quest button {
+    .complete-button {
       border: none;
       background: #f59e0b;
       color: #111827;
+      padding: 9px 11px;
+      border-radius: 10px;
       font-weight: bold;
-      padding: 10px 13px;
-      border-radius: 12px;
-      cursor: pointer;
+      white-space: nowrap;
     }
 
-    .quest.completed button {
+    .completed .complete-button {
       background: #334155;
       color: #94a3b8;
     }
 
-    /* CHARACTER */
+    .delete-button {
+      border: none;
+      background: transparent;
+      color: #64748b;
+      font-size: 17px;
+      padding: 5px;
+    }
+
+    /* =========================
+       EMPTY
+    ========================= */
+
+    .empty {
+      text-align: center;
+      padding: 25px 15px;
+      background: #1e293b;
+      border-radius: 16px;
+      color: #94a3b8;
+      border: 1px solid #334155;
+    }
+
+    /* =========================
+       SUGGESTIONS
+    ========================= */
+
+    .suggestion {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 15px;
+      padding: 14px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .suggestion-info {
+      flex: 1;
+    }
+
+    .suggestion-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .suggestion-meta {
+      color: #94a3b8;
+      font-size: 12px;
+    }
+
+    .add-suggestion {
+      border: none;
+      background: #334155;
+      color: white;
+      border-radius: 10px;
+      padding: 9px 11px;
+      font-weight: bold;
+    }
+
+    /* =========================
+       MODAL
+    ========================= */
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 500px;
+      background: #1e293b;
+      border-radius: 25px 25px 0 0;
+      padding: 22px 18px 28px;
+      border-top: 1px solid #475569;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    .close-button {
+      border: none;
+      background: #334155;
+      color: white;
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      font-size: 18px;
+    }
+
+    .form-group {
+      margin-bottom: 17px;
+    }
+
+    .form-label {
+      display: block;
+      color: #cbd5e1;
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      background: #0f172a;
+      color: white;
+      border: 1px solid #475569;
+      border-radius: 12px;
+      padding: 13px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #f59e0b;
+    }
+
+    .xp-options {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+    }
+
+    .xp-option {
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: white;
+      padding: 10px 3px;
+      border-radius: 9px;
+      font-size: 12px;
+    }
+
+    .xp-option.selected {
+      background: #f59e0b;
+      color: #111827;
+      border-color: #f59e0b;
+      font-weight: bold;
+    }
+
+    .custom-xp {
+      margin-top: 9px;
+    }
+
+    .skills {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .skill-option {
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: white;
+      padding: 12px;
+      border-radius: 11px;
+      text-align: left;
+    }
+
+    .skill-option.selected {
+      border-color: #f59e0b;
+      background: #3a2a0b;
+    }
+
+    .save-quest {
+      width: 100%;
+      border: none;
+      background: #f59e0b;
+      color: #111827;
+      padding: 14px;
+      border-radius: 13px;
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 5px;
+    }
+
+    /* =========================
+       CALENDAR
+    ========================= */
+
+    .calendar {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      padding: 16px;
+    }
+
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .calendar-header button {
+      border: none;
+      background: #334155;
+      color: white;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      font-size: 20px;
+    }
+
+    .calendar-month {
+      font-weight: bold;
+    }
+
+    .weekdays,
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      text-align: center;
+    }
+
+    .weekday {
+      color: #64748b;
+      font-size: 10px;
+      padding-bottom: 5px;
+    }
+
+    .day {
+      min-height: 40px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .day.empty {
+      cursor: default;
+    }
+
+    .day.today {
+      border: 1px solid #f59e0b;
+    }
+
+    .day.has-quests {
+      background: #334155;
+    }
+
+    .day.complete {
+      background: #166534;
+    }
+
+    .day.partial {
+      background: #854d0e;
+    }
+
+    .day-dot {
+      position: absolute;
+      bottom: 4px;
+      width: 4px;
+      height: 4px;
+      background: #f59e0b;
+      border-radius: 50%;
+    }
+
+    /* =========================
+       CHARACTER
+    ========================= */
 
     .character {
       background: #1e293b;
@@ -172,8 +529,8 @@
     .character-header {
       display: flex;
       align-items: center;
-      gap: 15px;
-      margin-bottom: 18px;
+      gap: 13px;
+      margin-bottom: 20px;
     }
 
     .avatar {
@@ -188,29 +545,25 @@
     }
 
     .character-name {
-      font-size: 19px;
       font-weight: bold;
+      font-size: 18px;
     }
 
     .character-class {
       color: #94a3b8;
-      font-size: 13px;
+      font-size: 12px;
       margin-top: 4px;
     }
 
     .stat {
-      margin-bottom: 12px;
+      margin-bottom: 13px;
     }
 
     .stat-top {
       display: flex;
       justify-content: space-between;
       margin-bottom: 5px;
-      font-size: 14px;
-    }
-
-    .stat-name {
-      color: #cbd5e1;
+      font-size: 13px;
     }
 
     .stat-value {
@@ -227,89 +580,15 @@
 
     .stat-fill {
       height: 100%;
+      width: 0%;
       background: #f59e0b;
       border-radius: 10px;
-      width: 0%;
-      transition: width 0.4s;
+      transition: width .3s;
     }
 
-    /* CALENDAR */
-
-    .calendar {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 20px;
-      padding: 16px;
-    }
-
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .calendar-month {
-      font-weight: bold;
-      font-size: 17px;
-    }
-
-    .calendar button {
-      background: #334155;
-      border: none;
-      color: white;
-      border-radius: 9px;
-      width: 32px;
-      height: 32px;
-      cursor: pointer;
-    }
-
-    .weekdays,
-    .calendar-days {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-      text-align: center;
-    }
-
-    .weekday {
-      color: #64748b;
-      font-size: 11px;
-      padding-bottom: 5px;
-    }
-
-    .day {
-      height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-      font-size: 13px;
-      position: relative;
-    }
-
-    .day.empty {
-      background: transparent;
-    }
-
-    .day.today {
-      border: 1px solid #f59e0b;
-    }
-
-    .day.complete {
-      background: #166534;
-    }
-
-    .day.partial {
-      background: #854d0e;
-    }
-
-    .day.missed {
-      background: #334155;
-      color: #64748b;
-    }
-
-    /* ACHIEVEMENTS */
+    /* =========================
+       ACHIEVEMENTS
+    ========================= */
 
     .achievements {
       display: grid;
@@ -325,7 +604,7 @@
     }
 
     .achievement.locked {
-      opacity: 0.4;
+      opacity: .4;
     }
 
     .achievement-icon {
@@ -341,11 +620,13 @@
     .achievement-description {
       color: #94a3b8;
       font-size: 11px;
-      margin-top: 4px;
       line-height: 1.4;
+      margin-top: 4px;
     }
 
-    /* NAVIGATION */
+    /* =========================
+       NAV
+    ========================= */
 
     .bottom-nav {
       position: fixed;
@@ -354,24 +635,20 @@
       transform: translateX(-50%);
       width: 100%;
       max-width: 500px;
-
       background: #111827;
       border-top: 1px solid #334155;
-
       display: flex;
       justify-content: space-around;
-
-      padding: 10px 5px;
-      z-index: 10;
+      padding: 9px 4px;
+      z-index: 50;
     }
 
     .nav-button {
-      background: none;
       border: none;
+      background: none;
       color: #64748b;
-      font-size: 11px;
-      cursor: pointer;
-      padding: 5px;
+      font-size: 10px;
+      padding: 4px;
     }
 
     .nav-button.active {
@@ -381,33 +658,35 @@
     .nav-icon {
       display: block;
       font-size: 20px;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
 
-    /* NOTIFICATION */
+    /* =========================
+       NOTIFICATION
+    ========================= */
 
     .notification {
       position: fixed;
-      top: 20px;
+      top: 18px;
       left: 50%;
-      transform: translateX(-50%) translateY(-100px);
-
+      transform: translate(-50%, -100px);
       background: #f59e0b;
       color: #111827;
-
-      padding: 13px 18px;
-      border-radius: 13px;
+      padding: 12px 17px;
+      border-radius: 12px;
       font-weight: bold;
-      z-index: 20;
-
-      transition: transform 0.3s ease;
+      z-index: 200;
+      transition: .3s;
+      white-space: nowrap;
     }
 
     .notification.show {
-      transform: translateX(-50%) translateY(0);
+      transform: translate(-50%, 0);
     }
 
-    /* HIDDEN SECTIONS */
+    /* =========================
+       PAGES
+    ========================= */
 
     .page {
       display: none;
@@ -421,134 +700,138 @@
 
 <body>
 
-  <div id="notification" class="notification"></div>
+  <div
+    class="notification"
+    id="notification">
+  </div>
+
+
+  <!-- =========================
+       MAIN APP
+  ========================= -->
 
   <div class="app">
 
-    <!-- QUESTS PAGE -->
 
-    <div id="questsPage" class="page active">
+    <!-- QUESTS -->
+
+    <div
+      class="page active"
+      id="questsPage">
 
       <div class="header">
+
         <h1>⚔️ QuestDay</h1>
 
         <div class="subtitle">
           Твои задачи — твои квесты
         </div>
+
       </div>
+
+
+      <!-- STATS -->
 
       <div class="stats">
 
-        <div class="level">
-          <div class="level-number" id="levelText">
+        <div class="level-row">
+
+          <div
+            class="level"
+            id="levelText">
             ⭐ Уровень 1
           </div>
 
-          <div class="xp" id="xpText">
+          <div
+            class="xp"
+            id="xpText">
             0 / 500 XP
           </div>
+
         </div>
 
         <div class="progress">
+
           <div
             class="progress-bar"
             id="progressBar">
           </div>
+
         </div>
 
-        <div class="streak" id="streakText">
+        <div
+          class="streak"
+          id="streakText">
           🔥 Серия: 0 дней
         </div>
 
       </div>
 
+
+      <!-- DATE -->
+
+      <div class="date-selector">
+
+        <button
+          onclick="changeSelectedDate(-1)">
+          ‹
+        </button>
+
+        <div class="selected-date">
+
+          <div id="selectedDateText">
+            Сегодня
+          </div>
+
+          <div
+            class="selected-date-small"
+            id="selectedDateSmall">
+          </div>
+
+        </div>
+
+        <button
+          onclick="changeSelectedDate(1)">
+          ›
+        </button>
+
+      </div>
+
+
+      <!-- ADD QUEST -->
+
+      <button
+        class="add-quest-button"
+        onclick="openQuestModal()">
+
+        ＋ Добавить свой квест
+
+      </button>
+
+
+      <!-- MY QUESTS -->
+
       <div class="section">
 
-        <h2>⚔️ Квесты на сегодня</h2>
+        <h2 id="questsTitle">
+          ⚔️ Квесты на сегодня
+        </h2>
 
-        <div id="questsContainer"></div>
-
-      </div>
-
-    </div>
-
-
-    <!-- CHARACTER PAGE -->
-
-    <div id="characterPage" class="page">
-
-      <div class="header">
-
-        <h1>🧙 Персонаж</h1>
-
-        <div class="subtitle">
-          Твоя реальная прокачка
+        <div
+          id="questsContainer">
         </div>
 
       </div>
 
-      <div class="character">
 
-        <div class="character-header">
+      <!-- SUGGESTIONS -->
 
-          <div class="avatar">
-            🧙
-          </div>
+      <div class="section">
 
-          <div>
-            <div class="character-name">
-              Искатель
-            </div>
+        <h2>💡 Предложенные квесты</h2>
 
-            <div class="character-class">
-              Путь героя
-            </div>
-          </div>
-
-        </div>
-
-        <div class="stat">
-          <div class="stat-top">
-            <span class="stat-name">💪 Сила</span>
-            <span class="stat-value" id="strengthValue">1</span>
-          </div>
-
-          <div class="stat-bar">
-            <div class="stat-fill" id="strengthBar"></div>
-          </div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-top">
-            <span class="stat-name">🧠 Интеллект</span>
-            <span class="stat-value" id="intelligenceValue">1</span>
-          </div>
-
-          <div class="stat-bar">
-            <div class="stat-fill" id="intelligenceBar"></div>
-          </div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-top">
-            <span class="stat-name">❤️ Выносливость</span>
-            <span class="stat-value" id="enduranceValue">1</span>
-          </div>
-
-          <div class="stat-bar">
-            <div class="stat-fill" id="enduranceBar"></div>
-          </div>
-        </div>
-
-        <div class="stat">
-          <div class="stat-top">
-            <span class="stat-name">🧘 Дисциплина</span>
-            <span class="stat-value" id="disciplineValue">1</span>
-          </div>
-
-          <div class="stat-bar">
-            <div class="stat-fill" id="disciplineBar"></div>
-          </div>
+        <div
+          id="suggestionsContainer">
         </div>
 
       </div>
@@ -556,25 +839,29 @@
     </div>
 
 
-    <!-- CALENDAR PAGE -->
+    <!-- CALENDAR -->
 
-    <div id="calendarPage" class="page">
+    <div
+      class="page"
+      id="calendarPage">
 
       <div class="header">
 
         <h1>📅 Календарь</h1>
 
         <div class="subtitle">
-          История твоих квестов
+          Планируй свою прокачку
         </div>
 
       </div>
+
 
       <div class="calendar">
 
         <div class="calendar-header">
 
-          <button onclick="changeMonth(-1)">
+          <button
+            onclick="changeCalendarMonth(-1)">
             ‹
           </button>
 
@@ -583,11 +870,13 @@
             id="calendarMonth">
           </div>
 
-          <button onclick="changeMonth(1)">
+          <button
+            onclick="changeCalendarMonth(1)">
             ›
           </button>
 
         </div>
+
 
         <div class="weekdays">
 
@@ -601,6 +890,7 @@
 
         </div>
 
+
         <div
           class="calendar-days"
           id="calendarDays">
@@ -611,16 +901,146 @@
     </div>
 
 
-    <!-- ACHIEVEMENTS PAGE -->
+    <!-- CHARACTER -->
 
-    <div id="achievementsPage" class="page">
+    <div
+      class="page"
+      id="characterPage">
+
+      <div class="header">
+
+        <h1>🧙 Герой</h1>
+
+        <div class="subtitle">
+          Прокачивай реальные навыки
+        </div>
+
+      </div>
+
+
+      <div class="character">
+
+        <div class="character-header">
+
+          <div class="avatar">
+            🧙
+          </div>
+
+          <div>
+
+            <div class="character-name">
+              Искатель
+            </div>
+
+            <div class="character-class">
+              Твой путь — твои правила
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="stat">
+
+          <div class="stat-top">
+            <span>💪 Сила</span>
+            <span
+              class="stat-value"
+              id="strengthValue">
+              1
+            </span>
+          </div>
+
+          <div class="stat-bar">
+            <div
+              class="stat-fill"
+              id="strengthBar">
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="stat">
+
+          <div class="stat-top">
+            <span>🧠 Интеллект</span>
+            <span
+              class="stat-value"
+              id="intelligenceValue">
+              1
+            </span>
+          </div>
+
+          <div class="stat-bar">
+            <div
+              class="stat-fill"
+              id="intelligenceBar">
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="stat">
+
+          <div class="stat-top">
+            <span>❤️ Выносливость</span>
+            <span
+              class="stat-value"
+              id="enduranceValue">
+              1
+            </span>
+          </div>
+
+          <div class="stat-bar">
+            <div
+              class="stat-fill"
+              id="enduranceBar">
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="stat">
+
+          <div class="stat-top">
+            <span>🧘 Дисциплина</span>
+            <span
+              class="stat-value"
+              id="disciplineValue">
+              1
+            </span>
+          </div>
+
+          <div class="stat-bar">
+            <div
+              class="stat-fill"
+              id="disciplineBar">
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ACHIEVEMENTS -->
+
+    <div
+      class="page"
+      id="achievementsPage">
 
       <div class="header">
 
         <h1>🏆 Достижения</h1>
 
         <div class="subtitle">
-          Докажи, на что способен
+          Твои победы
         </div>
 
       </div>
@@ -635,7 +1055,9 @@
   </div>
 
 
-  <!-- NAVIGATION -->
+  <!-- =========================
+       BOTTOM NAV
+  ========================= -->
 
   <div class="bottom-nav">
 
@@ -648,6 +1070,7 @@
 
     </button>
 
+
     <button
       class="nav-button"
       onclick="showPage('calendarPage', this)">
@@ -657,6 +1080,7 @@
 
     </button>
 
+
     <button
       class="nav-button"
       onclick="showPage('characterPage', this)">
@@ -665,6 +1089,7 @@
       Герой
 
     </button>
+
 
     <button
       class="nav-button"
@@ -678,151 +1103,265 @@
   </div>
 
 
+  <!-- =========================
+       ADD QUEST MODAL
+  ========================= -->
+
+  <div
+    class="modal-overlay"
+    id="questModal">
+
+    <div class="modal">
+
+      <div class="modal-header">
+
+        <div class="modal-title">
+          ⚔️ Новый квест
+        </div>
+
+        <button
+          class="close-button"
+          onclick="closeQuestModal()">
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label class="form-label">
+          Название квеста
+        </label>
+
+        <input
+          id="questName"
+          type="text"
+          placeholder="Например: Поход в зал"
+          maxlength="80">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label class="form-label">
+          Награда за выполнение
+        </label>
+
+        <div class="xp-options">
+
+          <button
+            class="xp-option"
+            onclick="selectXP(10, this)">
+            10
+          </button>
+
+          <button
+            class="xp-option"
+            onclick="selectXP(20, this)">
+            20
+          </button>
+
+          <button
+            class="xp-option"
+            onclick="selectXP(30, this)">
+            30
+          </button>
+
+          <button
+            class="xp-option"
+            onclick="selectXP(50, this)">
+            50
+          </button>
+
+          <button
+            class="xp-option"
+            onclick="selectXP(100, this)">
+            100
+          </button>
+
+        </div>
+
+        <input
+          class="custom-xp"
+          id="customXP"
+          type="number"
+          min="5"
+          max="100"
+          placeholder="Или свой вариант: 5–100 XP">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label class="form-label">
+          Какой навык прокачивает?
+        </label>
+
+        <div class="skills">
+
+          <button
+            class="skill-option"
+            onclick="selectSkill('strength', this)">
+            💪 Сила
+          </button>
+
+          <button
+            class="skill-option"
+            onclick="selectSkill('intelligence', this)">
+            🧠 Интеллект
+          </button>
+
+          <button
+            class="skill-option"
+            onclick="selectSkill('endurance', this)">
+            ❤️ Выносливость
+          </button>
+
+          <button
+            class="skill-option"
+            onclick="selectSkill('discipline', this)">
+            🧘 Дисциплина
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label class="form-label">
+          Дата квеста
+        </label>
+
+        <input
+          id="questDate"
+          type="date">
+
+      </div>
+
+
+      <button
+        class="save-quest"
+        onclick="saveNewQuest()">
+
+        ⚔️ Создать квест
+
+      </button>
+
+    </div>
+
+  </div>
+
+
 <script>
 
-  /* =========================
-     DATA
-  ========================= */
+  /* =====================================================
+     SUGGESTED QUESTS
+  ===================================================== */
 
-  const quests = [
+  const suggestions = [
 
     {
-      id: "water",
-      title: "🥤 Выпить воды",
-      type: "Выносливость",
-      reward: 10,
-      stat: "endurance"
+      title: "🏋️ Поход в зал",
+      xp: 50,
+      skill: "strength",
+      skillName: "💪 Сила"
     },
 
     {
-      id: "sport",
-      title: "🏃 20 минут спорта",
-      type: "Сила",
-      reward: 30,
-      stat: "strength"
+      title: "📚 Прочитать 20 страниц",
+      xp: 30,
+      skill: "intelligence",
+      skillName: "🧠 Интеллект"
     },
 
     {
-      id: "book",
-      title: "📚 Читать 10 страниц",
-      type: "Интеллект",
-      reward: 20,
-      stat: "intelligence"
+      title: "🚶 10 000 шагов",
+      xp: 40,
+      skill: "endurance",
+      skillName: "❤️ Выносливость"
     },
 
     {
-      id: "meditation",
       title: "🧘 Медитация 10 минут",
-      type: "Дисциплина",
-      reward: 25,
-      stat: "discipline"
+      xp: 25,
+      skill: "discipline",
+      skillName: "🧘 Дисциплина"
+    },
+
+    {
+      title: "🥗 Съесть полезный завтрак",
+      xp: 15,
+      skill: "endurance",
+      skillName: "❤️ Выносливость"
+    },
+
+    {
+      title: "📵 1 час без соцсетей",
+      xp: 30,
+      skill: "discipline",
+      skillName: "🧘 Дисциплина"
     }
 
   ];
 
 
-  const achievements = [
+  /* =====================================================
+     APPLICATION DATA
+  ===================================================== */
 
-    {
-      id: "first",
-      icon: "⚔️",
-      title: "Первый квест",
-      description: "Выполнить первый квест",
-      check: data => data.totalCompleted >= 1
-    },
+  let data =
+    JSON.parse(
+      localStorage.getItem("questdayData")
+    ) || {
 
-    {
-      id: "ten",
-      icon: "🏆",
-      title: "Герой",
-      description: "Выполнить 10 квестов",
-      check: data => data.totalCompleted >= 10
-    },
+      level: 1,
 
-    {
-      id: "xp500",
-      icon: "⭐",
-      title: "Опытный",
-      description: "Получить 500 XP",
-      check: data => data.totalXP >= 500
-    },
+      xp: 0,
 
-    {
-      id: "streak7",
-      icon: "🔥",
-      title: "Железная воля",
-      description: "Серия 7 дней",
-      check: data => data.streak >= 7
-    },
+      totalXP: 0,
 
-    {
-      id: "level5",
-      icon: "👑",
-      title: "Ветеран",
-      description: "Достичь 5 уровня",
-      check: data => data.level >= 5
-    },
+      totalCompleted: 0,
 
-    {
-      id: "allstats",
-      icon: "🧙",
-      title: "Мастер",
-      description: "Прокачать все характеристики",
-      check: data =>
-        data.stats.strength >= 5 &&
-        data.stats.intelligence >= 5 &&
-        data.stats.endurance >= 5 &&
-        data.stats.discipline >= 5
-    }
+      streak: 0,
 
-  ];
+      lastCompletedDate: null,
+
+      quests: [],
+
+      history: {},
+
+      stats: {
+
+        strength: 1,
+
+        intelligence: 1,
+
+        endurance: 1,
+
+        discipline: 1
+
+      }
+
+    };
 
 
-  /* =========================
-     STATE
-  ========================= */
-
-  let data = JSON.parse(
-    localStorage.getItem("questdayData")
-  ) || {
-
-    level: 1,
-
-    xp: 0,
-
-    totalXP: 0,
-
-    totalCompleted: 0,
-
-    streak: 0,
-
-    lastCompletedDate: null,
-
-    completedToday: [],
-
-    history: {},
-
-    stats: {
-
-      strength: 1,
-
-      intelligence: 1,
-
-      endurance: 1,
-
-      discipline: 1
-
-    }
-
-  };
-
+  let selectedDate = new Date();
 
   let calendarDate = new Date();
 
+  let selectedXP = 20;
 
-  /* =========================
+  let selectedSkill = "discipline";
+
+
+  /* =====================================================
      SAVE
-  ========================= */
+  ===================================================== */
 
   function saveData() {
 
@@ -834,51 +1373,76 @@
   }
 
 
-  /* =========================
-     DATE
-  ========================= */
+  /* =====================================================
+     DATE HELPERS
+  ===================================================== */
 
-  function getDateKey(date = new Date()) {
+  function dateKey(date) {
 
-    const year = date.getFullYear();
+    const year =
+      date.getFullYear();
 
     const month =
-      String(date.getMonth() + 1).padStart(2, "0");
+      String(
+        date.getMonth() + 1
+      ).padStart(2, "0");
 
     const day =
-      String(date.getDate()).padStart(2, "0");
+      String(
+        date.getDate()
+      ).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
 
   }
 
 
-  function resetIfNewDay() {
+  function parseDate(key) {
 
-    const today = getDateKey();
+    const parts =
+      key.split("-");
 
-    if (
-      data.lastDate &&
-      data.lastDate !== today
-    ) {
-
-      data.completedToday = [];
-
-    }
+    return new Date(
+      Number(parts[0]),
+      Number(parts[1]) - 1,
+      Number(parts[2])
+    );
 
   }
 
 
-  resetIfNewDay();
+  function formatDate(date) {
+
+    return date.toLocaleDateString(
+      "ru-RU",
+      {
+        day: "numeric",
+        month: "long"
+      }
+    );
+
+  }
 
 
-  /* =========================
-     XP
-  ========================= */
+  function isToday(date) {
+
+    return (
+      dateKey(date) ===
+      dateKey(new Date())
+    );
+
+  }
+
+
+  /* =====================================================
+     XP / LEVEL
+  ===================================================== */
 
   function xpNeeded() {
 
-    return 500 + ((data.level - 1) * 100);
+    return 500 + (
+      (data.level - 1) * 100
+    );
 
   }
 
@@ -889,14 +1453,18 @@
 
     data.totalXP += amount;
 
-    while (data.xp >= xpNeeded()) {
+
+    while (
+      data.xp >= xpNeeded()
+    ) {
 
       data.xp -= xpNeeded();
 
       data.level++;
 
       showNotification(
-        "🎉 Новый уровень! Уровень " + data.level
+        "🎉 Новый уровень! Уровень " +
+        data.level
       );
 
     }
@@ -904,64 +1472,96 @@
   }
 
 
-  /* =========================
+  /* =====================================================
      COMPLETE QUEST
-  ========================= */
+  ===================================================== */
 
   function completeQuest(id) {
 
-    if (data.completedToday.includes(id)) {
-      return;
-    }
-
     const quest =
-      quests.find(q => q.id === id);
+      data.quests.find(
+        q => q.id === id
+      );
 
     if (!quest) {
       return;
     }
 
-    const today = getDateKey();
+    if (quest.completed) {
+      return;
+    }
 
-    data.completedToday.push(id);
+
+    const today =
+      dateKey(new Date());
+
+
+    if (
+      quest.date !== today
+    ) {
+
+      showNotification(
+        "📅 Этот квест запланирован на " +
+        formatDate(
+          parseDate(quest.date)
+        )
+      );
+
+      return;
+
+    }
+
+
+    quest.completed = true;
+
+
+    addXP(quest.xp);
+
 
     data.totalCompleted++;
 
-    addXP(quest.reward);
 
-    data.stats[quest.stat]++;
+    data.stats[quest.skill]++;
+
 
     if (!data.history[today]) {
 
       data.history[today] = {
+
         completed: 0,
+
+        planned: 0,
+
         xp: 0
+
       };
 
     }
 
+
     data.history[today].completed++;
 
-    data.history[today].xp += quest.reward;
+    data.history[today].xp += quest.xp;
+
 
     updateStreak();
 
-    data.lastDate = today;
 
     saveData();
 
     render();
 
+
     showNotification(
-      `+${quest.reward} XP ⚔️`
+      `+${quest.xp} XP ⚔️`
     );
 
   }
 
 
-  /* =========================
+  /* =====================================================
      STREAK
-  ========================= */
+  ===================================================== */
 
   function updateStreak() {
 
@@ -969,7 +1569,18 @@
       new Date();
 
     const todayKey =
-      getDateKey(today);
+      dateKey(today);
+
+
+    if (
+      data.lastCompletedDate ===
+      todayKey
+    ) {
+
+      return;
+
+    }
+
 
     const yesterday =
       new Date(today);
@@ -978,23 +1589,24 @@
       yesterday.getDate() - 1
     );
 
+
     const yesterdayKey =
-      getDateKey(yesterday);
+      dateKey(yesterday);
 
 
     if (
-      data.lastCompletedDate === yesterdayKey
+      data.lastCompletedDate ===
+      yesterdayKey
     ) {
 
       data.streak++;
 
-    } else if (
-      data.lastCompletedDate !== todayKey
-    ) {
+    } else {
 
       data.streak = 1;
 
     }
+
 
     data.lastCompletedDate =
       todayKey;
@@ -1002,9 +1614,450 @@
   }
 
 
-  /* =========================
-     QUESTS
-  ========================= */
+  /* =====================================================
+     DELETE QUEST
+  ===================================================== */
+
+  function deleteQuest(id) {
+
+    const quest =
+      data.quests.find(
+        q => q.id === id
+      );
+
+    if (!quest) {
+      return;
+    }
+
+
+    if (quest.completed) {
+
+      showNotification(
+        "Нельзя удалить выполненный квест"
+      );
+
+      return;
+
+    }
+
+
+    data.quests =
+      data.quests.filter(
+        q => q.id !== id
+      );
+
+
+    saveData();
+
+    render();
+
+
+    showNotification(
+      "Квест удалён"
+    );
+
+  }
+
+
+  /* =====================================================
+     SELECTED DATE
+  ===================================================== */
+
+  function changeSelectedDate(amount) {
+
+    selectedDate.setDate(
+      selectedDate.getDate() + amount
+    );
+
+    render();
+
+  }
+
+
+  function setSelectedDate(date) {
+
+    selectedDate =
+      new Date(date);
+
+    render();
+
+  }
+
+
+  /* =====================================================
+     QUEST MODAL
+  ===================================================== */
+
+  function openQuestModal(
+    date = selectedDate
+  ) {
+
+    document
+      .getElementById("questModal")
+      .classList.add("show");
+
+
+    document
+      .getElementById("questName")
+      .value = "";
+
+
+    document
+      .getElementById("customXP")
+      .value = "";
+
+
+    document
+      .getElementById("questDate")
+      .value = dateKey(date);
+
+
+    selectedXP = 20;
+
+    selectedSkill =
+      "discipline";
+
+
+    document
+      .querySelectorAll(".xp-option")
+      .forEach(
+        button =>
+          button.classList.remove(
+            "selected"
+          )
+      );
+
+
+    document
+      .querySelectorAll(".skill-option")
+      .forEach(
+        button =>
+          button.classList.remove(
+            "selected"
+          )
+      );
+
+  }
+
+
+  function closeQuestModal() {
+
+    document
+      .getElementById("questModal")
+      .classList.remove("show");
+
+  }
+
+
+  function selectXP(
+    value,
+    button
+  ) {
+
+    selectedXP = value;
+
+
+    document
+      .getElementById("customXP")
+      .value = "";
+
+
+    document
+      .querySelectorAll(".xp-option")
+      .forEach(
+        item =>
+          item.classList.remove(
+            "selected"
+          )
+      );
+
+
+    button.classList.add(
+      "selected"
+    );
+
+  }
+
+
+  function selectSkill(
+    skill,
+    button
+  ) {
+
+    selectedSkill = skill;
+
+
+    document
+      .querySelectorAll(".skill-option")
+      .forEach(
+        item =>
+          item.classList.remove(
+            "selected"
+          )
+      );
+
+
+    button.classList.add(
+      "selected"
+    );
+
+  }
+
+
+  function saveNewQuest() {
+
+    const name =
+      document
+        .getElementById("questName")
+        .value
+        .trim();
+
+
+    const customXP =
+      Number(
+        document
+          .getElementById("customXP")
+          .value
+      );
+
+
+    const xp =
+      customXP || selectedXP;
+
+
+    const date =
+      document
+        .getElementById("questDate")
+        .value;
+
+
+    if (!name) {
+
+      showNotification(
+        "Введите название квеста"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      xp < 5 ||
+      xp > 100
+    ) {
+
+      showNotification(
+        "XP должен быть от 5 до 100"
+      );
+
+      return;
+
+    }
+
+
+    if (!date) {
+
+      showNotification(
+        "Выберите дату"
+      );
+
+      return;
+
+    }
+
+
+    const quest = {
+
+      id:
+        Date.now().toString(),
+
+      title: name,
+
+      xp: xp,
+
+      skill: selectedSkill,
+
+      date: date,
+
+      completed: false
+
+    };
+
+
+    data.quests.push(
+      quest
+    );
+
+
+    if (!data.history[date]) {
+
+      data.history[date] = {
+
+        completed: 0,
+
+        planned: 0,
+
+        xp: 0
+
+      };
+
+    }
+
+
+    data.history[date].planned++;
+
+
+    saveData();
+
+
+    selectedDate =
+      parseDate(date);
+
+
+    closeQuestModal();
+
+
+    render();
+
+
+    showNotification(
+      "⚔️ Квест создан!"
+    );
+
+  }
+
+
+  /* =====================================================
+     SUGGESTIONS
+  ===================================================== */
+
+  function addSuggestion(index) {
+
+    const suggestion =
+      suggestions[index];
+
+
+    const date =
+      dateKey(selectedDate);
+
+
+    data.quests.push({
+
+      id:
+        Date.now().toString(),
+
+      title:
+        suggestion.title,
+
+      xp:
+        suggestion.xp,
+
+      skill:
+        suggestion.skill,
+
+      date:
+        date,
+
+      completed:
+        false
+
+    });
+
+
+    if (!data.history[date]) {
+
+      data.history[date] = {
+
+        completed: 0,
+
+        planned: 0,
+
+        xp: 0
+
+      };
+
+    }
+
+
+    data.history[date].planned++;
+
+
+    saveData();
+
+    render();
+
+
+    showNotification(
+      "⚔️ Квест добавлен!"
+    );
+
+  }
+
+
+  function renderSuggestions() {
+
+    const container =
+      document.getElementById(
+        "suggestionsContainer"
+      );
+
+
+    container.innerHTML = "";
+
+
+    suggestions.forEach(
+      (suggestion, index) => {
+
+        const div =
+          document.createElement(
+            "div"
+          );
+
+
+        div.className =
+          "suggestion";
+
+
+        div.innerHTML = `
+
+          <div class="suggestion-info">
+
+            <div class="suggestion-title">
+              ${suggestion.title}
+            </div>
+
+            <div class="suggestion-meta">
+              +${suggestion.xp} XP ·
+              ${suggestion.skillName}
+            </div>
+
+          </div>
+
+          <button
+            class="add-suggestion"
+            onclick="addSuggestion(${index})">
+
+            ＋ Добавить
+
+          </button>
+
+        `;
+
+
+        container.appendChild(
+          div
+        );
+
+      }
+    );
+
+  }
+
+
+  /* =====================================================
+     QUEST RENDER
+  ===================================================== */
 
   function renderQuests() {
 
@@ -1013,64 +2066,198 @@
         "questsContainer"
       );
 
+
     container.innerHTML = "";
 
-    quests.forEach(quest => {
 
-      const completed =
-        data.completedToday.includes(
-          quest.id
-        );
+    const selectedKey =
+      dateKey(selectedDate);
 
-      const div =
-        document.createElement("div");
 
-      div.className =
-        "quest" +
-        (completed
-          ? " completed"
-          : "");
+    const dayQuests =
+      data.quests.filter(
+        q => q.date === selectedKey
+      );
 
-      div.innerHTML = `
 
-        <div class="quest-info">
+    const title =
+      document.getElementById(
+        "questsTitle"
+      );
 
-          <div class="quest-title">
-            ${quest.title}
-          </div>
 
-          <div class="quest-type">
-            ${quest.type}
-          </div>
+    if (isToday(selectedDate)) {
 
-          <div class="quest-reward">
-            +${quest.reward} XP
-          </div>
+      title.innerText =
+        "⚔️ Квесты на сегодня";
+
+    } else {
+
+      title.innerText =
+        "⚔️ Квесты на " +
+        formatDate(selectedDate);
+
+    }
+
+
+    if (
+      dayQuests.length === 0
+    ) {
+
+      container.innerHTML = `
+
+        <div class="empty">
+
+          Здесь пока нет квестов.
+
+          <br><br>
+
+          Создай свой квест или
+          выбери предложение ниже.
 
         </div>
 
-        <button
-          onclick="completeQuest('${quest.id}')"
-          ${completed ? "disabled" : ""}>
-
-          ${completed
-            ? "✓ Выполнено"
-            : "Выполнить"}
-
-        </button>
-
       `;
 
-      container.appendChild(div);
+      return;
 
-    });
+    }
+
+
+    dayQuests.forEach(
+      quest => {
+
+        const div =
+          document.createElement(
+            "div"
+          );
+
+
+        div.className =
+          "quest" +
+          (
+            quest.completed
+              ? " completed"
+              : ""
+          );
+
+
+        const skillName =
+          getSkillName(
+            quest.skill
+          );
+
+
+        div.innerHTML = `
+
+          <div class="quest-info">
+
+            <div class="quest-title">
+              ${escapeHTML(
+                quest.title
+              )}
+            </div>
+
+            <div class="quest-meta">
+
+              <span class="tag xp-tag">
+                +${quest.xp} XP
+              </span>
+
+              <span class="tag">
+                ${skillName}
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <button
+            class="complete-button"
+            onclick="completeQuest('${quest.id}')"
+            ${quest.completed ? "disabled" : ""}>
+
+            ${
+              quest.completed
+                ? "✓"
+                : "Выполнить"
+            }
+
+          </button>
+
+
+          ${
+            quest.completed
+              ? ""
+              : `
+                <button
+                  class="delete-button"
+                  onclick="deleteQuest('${quest.id}')">
+
+                  🗑️
+
+                </button>
+              `
+          }
+
+        `;
+
+
+        container.appendChild(
+          div
+        );
+
+      }
+    );
 
   }
 
 
-  /* =========================
+  function getSkillName(skill) {
+
+    const names = {
+
+      strength: "💪 Сила",
+
+      intelligence:
+        "🧠 Интеллект",
+
+      endurance:
+        "❤️ Выносливость",
+
+      discipline:
+        "🧘 Дисциплина"
+
+    };
+
+
+    return (
+      names[skill] ||
+      skill
+    );
+
+  }
+
+
+  function escapeHTML(text) {
+
+    const div =
+      document.createElement(
+        "div"
+      );
+
+    div.innerText =
+      text;
+
+    return div.innerHTML;
+
+  }
+
+
+  /* =====================================================
      STATS
-  ========================= */
+  ===================================================== */
 
   function renderStats() {
 
@@ -1079,25 +2266,27 @@
     ).innerText =
       `⭐ Уровень ${data.level}`;
 
+
     document.getElementById(
       "xpText"
     ).innerText =
       `${data.xp} / ${xpNeeded()} XP`;
 
-    const percent =
-      (data.xp / xpNeeded()) * 100;
 
     document.getElementById(
       "progressBar"
     ).style.width =
-      percent + "%";
+      (
+        data.xp /
+        xpNeeded() *
+        100
+      ) + "%";
+
 
     document.getElementById(
       "streakText"
     ).innerText =
-      `🔥 Серия: ${data.streak} ${
-        getDaysWord(data.streak)
-      }`;
+      `🔥 Серия: ${data.streak} ${getDaysWord(data.streak)}`;
 
   }
 
@@ -1111,80 +2300,88 @@
       return "день";
     }
 
+
     if (
-      [2,3,4].includes(
+      [2, 3, 4].includes(
         number % 10
       ) &&
-      ![12,13,14].includes(
+      ![12, 13, 14].includes(
         number % 100
       )
     ) {
       return "дня";
     }
 
+
     return "дней";
 
   }
 
 
-  /* =========================
+  /* =====================================================
      CHARACTER
-  ========================= */
+  ===================================================== */
 
   function renderCharacter() {
 
-    const stats =
-      data.stats;
-
     updateStat(
       "strength",
-      stats.strength
+      data.stats.strength
     );
 
     updateStat(
       "intelligence",
-      stats.intelligence
+      data.stats.intelligence
     );
 
     updateStat(
       "endurance",
-      stats.endurance
+      data.stats.endurance
     );
 
     updateStat(
       "discipline",
-      stats.discipline
+      data.stats.discipline
     );
 
   }
 
 
-  function updateStat(name, value) {
+  function updateStat(
+    name,
+    value
+  ) {
 
     document.getElementById(
       name + "Value"
-    ).innerText = value;
+    ).innerText =
+      value;
 
-    const percent =
-      Math.min(value * 5, 100);
 
     document.getElementById(
       name + "Bar"
     ).style.width =
-      percent + "%";
+      Math.min(
+        value * 5,
+        100
+      ) + "%";
 
   }
 
 
-  /* =========================
+  /* =====================================================
      CALENDAR
-  ========================= */
+  ===================================================== */
 
-  function changeMonth(amount) {
+  function changeCalendarMonth(
+    amount
+  ) {
 
     calendarDate.setMonth(
-      calendarDate.getMonth() + amount
+      calendarDate.getMonth() +
+      amount
     );
+
 
     renderCalendar();
 
@@ -1199,7 +2396,10 @@
     const month =
       calendarDate.getMonth();
 
-    const monthName =
+
+    document.getElementById(
+      "calendarMonth"
+    ).innerText =
       calendarDate.toLocaleDateString(
         "ru-RU",
         {
@@ -1208,17 +2408,12 @@
         }
       );
 
-    document.getElementById(
-      "calendarMonth"
-    ).innerText =
-      monthName.charAt(0).toUpperCase() +
-      monthName.slice(1);
-
 
     const container =
       document.getElementById(
         "calendarDays"
       );
+
 
     container.innerHTML = "";
 
@@ -1229,6 +2424,7 @@
         month,
         1
       ).getDay();
+
 
     firstDay =
       firstDay === 0
@@ -1251,18 +2447,18 @@
     ) {
 
       const empty =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       empty.className =
         "day empty";
 
-      container.appendChild(empty);
+      container.appendChild(
+        empty
+      );
 
     }
-
-
-    const todayKey =
-      getDateKey();
 
 
     for (
@@ -1278,29 +2474,53 @@
           day
         );
 
-      const key =
-        getDateKey(date);
 
-      const history =
-        data.history[key];
+      const key =
+        dateKey(date);
+
+
+      const quests =
+        data.quests.filter(
+          q => q.date === key
+        );
+
+
+      const completed =
+        quests.filter(
+          q => q.completed
+        ).length;
 
 
       const div =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       div.className =
         "day";
 
 
-      if (key === todayKey) {
-        div.classList.add("today");
+      if (isToday(date)) {
+
+        div.classList.add(
+          "today"
+        );
+
       }
 
 
-      if (history) {
+      if (
+        quests.length > 0
+      ) {
+
+        div.classList.add(
+          "has-quests"
+        );
+
 
         if (
-          history.completed >=
+          completed ===
           quests.length
         ) {
 
@@ -1309,7 +2529,7 @@
           );
 
         } else if (
-          history.completed > 0
+          completed > 0
         ) {
 
           div.classList.add(
@@ -1318,29 +2538,65 @@
 
         }
 
-      } else if (
-        date < new Date()
-      ) {
 
-        div.classList.add(
-          "missed"
+        const dot =
+          document.createElement(
+            "div"
+          );
+
+        dot.className =
+          "day-dot";
+
+        div.appendChild(
+          dot
         );
 
       }
 
 
-      div.innerText = day;
+      const number =
+        document.createElement(
+          "span"
+        );
 
-      container.appendChild(div);
+      number.innerText =
+        day;
+
+
+      div.appendChild(
+        number
+      );
+
+
+      div.onclick = () => {
+
+        selectedDate =
+          new Date(date);
+
+        showPage(
+          "questsPage",
+          document.querySelector(
+            ".nav-button"
+          )
+        );
+
+        render();
+
+      };
+
+
+      container.appendChild(
+        div
+      );
 
     }
 
   }
 
 
-  /* =========================
+  /* =====================================================
      ACHIEVEMENTS
-  ========================= */
+  ===================================================== */
 
   function renderAchievements() {
 
@@ -1349,23 +2605,85 @@
         "achievementsContainer"
       );
 
+
+    const achievements = [
+
+      {
+        icon: "⚔️",
+        title: "Первый квест",
+        description:
+          "Выполнить первый квест",
+        unlocked:
+          data.totalCompleted >= 1
+      },
+
+      {
+        icon: "🏆",
+        title: "Герой",
+        description:
+          "Выполнить 10 квестов",
+        unlocked:
+          data.totalCompleted >= 10
+      },
+
+      {
+        icon: "⭐",
+        title: "Опытный",
+        description:
+          "Получить 500 XP",
+        unlocked:
+          data.totalXP >= 500
+      },
+
+      {
+        icon: "🔥",
+        title: "Железная воля",
+        description:
+          "Серия 7 дней",
+        unlocked:
+          data.streak >= 7
+      },
+
+      {
+        icon: "👑",
+        title: "Ветеран",
+        description:
+          "Достичь 5 уровня",
+        unlocked:
+          data.level >= 5
+      },
+
+      {
+        icon: "🧙",
+        title: "Мастер",
+        description:
+          "Прокачать все навыки до 5",
+        unlocked:
+          data.stats.strength >= 5 &&
+          data.stats.intelligence >= 5 &&
+          data.stats.endurance >= 5 &&
+          data.stats.discipline >= 5
+      }
+
+    ];
+
+
     container.innerHTML = "";
 
 
     achievements.forEach(
       achievement => {
 
-        const unlocked =
-          achievement.check(data);
-
-
         const div =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
+
 
         div.className =
           "achievement" +
           (
-            unlocked
+            achievement.unlocked
               ? ""
               : " locked"
           );
@@ -1387,7 +2705,7 @@
 
           <div class="achievement-description">
             ${
-              unlocked
+              achievement.unlocked
                 ? "✓ Получено"
                 : "🔒 Заблокировано"
             }
@@ -1396,7 +2714,9 @@
         `;
 
 
-        container.appendChild(div);
+        container.appendChild(
+          div
+        );
 
       }
     );
@@ -1404,9 +2724,9 @@
   }
 
 
-  /* =========================
+  /* =====================================================
      NAVIGATION
-  ========================= */
+  ===================================================== */
 
   function showPage(
     pageId,
@@ -1415,13 +2735,12 @@
 
     document
       .querySelectorAll(".page")
-      .forEach(page => {
-
-        page.classList.remove(
-          "active"
-        );
-
-      });
+      .forEach(
+        page =>
+          page.classList.remove(
+            "active"
+          )
+      );
 
 
     document
@@ -1433,22 +2752,26 @@
 
     document
       .querySelectorAll(".nav-button")
-      .forEach(btn => {
+      .forEach(
+        btn =>
+          btn.classList.remove(
+            "active"
+          )
+      );
 
-        btn.classList.remove(
-          "active"
-        );
 
-      });
+    if (button) {
 
+      button.classList.add(
+        "active"
+      );
 
-    button.classList.add(
-      "active"
-    );
+    }
 
 
     if (
-      pageId === "calendarPage"
+      pageId ===
+      "calendarPage"
     ) {
 
       renderCalendar();
@@ -1458,9 +2781,9 @@
   }
 
 
-  /* =========================
+  /* =====================================================
      NOTIFICATION
-  ========================= */
+  ===================================================== */
 
   function showNotification(
     message
@@ -1471,43 +2794,103 @@
         "notification"
       );
 
+
     notification.innerText =
       message;
+
 
     notification.classList.add(
       "show"
     );
 
 
-    setTimeout(() => {
+    setTimeout(
+      () => {
 
-      notification.classList.remove(
-        "show"
-      );
+        notification.classList.remove(
+          "show"
+        );
 
-    }, 1800);
+      },
+      1800
+    );
 
   }
 
 
-  /* =========================
-     RENDER
-  ========================= */
+  /* =====================================================
+     SELECTED DATE UI
+  ===================================================== */
+
+  function renderSelectedDate() {
+
+    const text =
+      document.getElementById(
+        "selectedDateText"
+      );
+
+
+    const small =
+      document.getElementById(
+        "selectedDateSmall"
+      );
+
+
+    if (
+      isToday(selectedDate)
+    ) {
+
+      text.innerText =
+        "Сегодня";
+
+    } else {
+
+      text.innerText =
+        formatDate(
+          selectedDate
+        );
+
+    }
+
+
+    small.innerText =
+      selectedDate.toLocaleDateString(
+        "ru-RU",
+        {
+          weekday: "long",
+          year: "numeric"
+        }
+      );
+
+  }
+
+
+  /* =====================================================
+     MAIN RENDER
+  ===================================================== */
 
   function render() {
 
     renderStats();
 
+    renderSelectedDate();
+
     renderQuests();
 
-    renderCharacter();
+    renderSuggestions();
 
     renderCalendar();
+
+    renderCharacter();
 
     renderAchievements();
 
   }
 
+
+  /* =====================================================
+     START
+  ===================================================== */
 
   render();
 
