@@ -33,11 +33,16 @@ async function getProfile(id) {
 async function scanUserIds() {
   const ids = [];
   let cursor = '0';
-  for (let page = 0; page < 20; page++) {
-    const r = await fetch(`${url}/scan/${cursor}?match=${encodeURIComponent('questday:user:*')}&count=100`, { headers: { Authorization: `Bearer ${token}` } });
+  // Upstash REST accepts Redis command arguments as path segments.
+  // The previous implementation used query parameters, which can return an
+  // empty/invalid scan response and made the leaderboard appear unavailable.
+  for (let page = 0; page < 50; page++) {
+    const r = await fetch(`${url}/scan/${encodeURIComponent(cursor)}/match/${encodeURIComponent('questday:user:*')}/count/100`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
     if (!r.ok) throw new Error(`KV scan ${r.status}`);
     const j = await r.json();
-    const result = j.result || [];
+    const result = Array.isArray(j.result) ? j.result : [];
     const next = String(result[0] ?? '0');
     const keys = Array.isArray(result[1]) ? result[1] : [];
     keys.forEach(k => { const m = /^questday:user:(\d+)$/.exec(String(k)); if (m) ids.push(m[1]); });

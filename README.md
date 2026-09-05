@@ -33,7 +33,7 @@ Telegram Mini App для ежедневных RPG-квестов.
 Character sprites are embedded directly into the hero page as PNG data URLs, so the hero models render even if Vercel/GitHub static asset paths are misconfigured. The exact supplied 8 character files are retained in assets/characters/ as well.
 
 
-## QuestDay 2.7 — Друзья и рейтинг
+## QuestDay 2.7.1 — Друзья и рейтинг
 - Добавлен рейтинг среди друзей по Quest Score.
 - Добавлены взаимные связи друзей через Telegram Mini App deep link `startapp=ref_<telegram_user_id>`.
 - За нового друга, который впервые запускает QuestDay по приглашению, пригласивший получает +100 Quest Coins.
