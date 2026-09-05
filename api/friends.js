@@ -30,6 +30,23 @@ async function getProfile(id) {
   return r.result ? JSON.parse(r.result) : null;
 }
 
+async function scanUserIds() {
+  const ids = [];
+  let cursor = '0';
+  for (let page = 0; page < 20; page++) {
+    const r = await fetch(`${url}/scan/${cursor}?match=${encodeURIComponent('questday:user:*')}&count=100`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!r.ok) throw new Error(`KV scan ${r.status}`);
+    const j = await r.json();
+    const result = j.result || [];
+    const next = String(result[0] ?? '0');
+    const keys = Array.isArray(result[1]) ? result[1] : [];
+    keys.forEach(k => { const m = /^questday:user:(\d+)$/.exec(String(k)); if (m) ids.push(m[1]); });
+    cursor = next;
+    if (cursor === '0') break;
+  }
+  return [...new Set(ids)];
+}
+
 async function setProfile(id, profile) {
   profile.updatedAt = Date.now();
   await kv('set', `questday:user:${id}`, JSON.stringify(profile));
@@ -128,14 +145,16 @@ export default async function handler(req, res) {
     }
 
     if (req.method === 'GET') {
-      const ids = [...new Set((Array.isArray(me?.friends) ? me.friends : []).map(String).filter(id => /^\d+$/.test(id)))].slice(0, MAX_FRIENDS);
-      const players = [publicPlayer(user.id, me)];
+      // Global leaderboard: include every Telegram user who has a saved profile
+      // and has earned at least 1 Quest Score.
+      const ids = await scanUserIds();
+      const players = [];
       for (const id of ids) {
-        const profile = await getProfile(id);
-        if (profile) players.push(publicPlayer(id, profile));
+        const profile = id === String(user.id) ? me : await getProfile(id);
+        if (profile && Number(profile.questScore || 0) > 0) players.push(publicPlayer(id, profile));
       }
       players.sort((a, b) => b.score - a.score || b.streak - a.streak || b.level - a.level || a.name.localeCompare(b.name, 'ru'));
-      return res.status(200).json({ ok: true, players, friendCount: ids.length });
+      return res.status(200).json({ ok: true, players, playerCount: players.length });
     }
 
     return res.status(405).json({ error: 'Method not allowed' });
