@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuestDay</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111827;
+      color: white;
+    }
+
+    .app {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 24px 18px;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      color: #9ca3af;
+      margin-top: 0;
+    }
+
+    .stats {
+      background: #1f2937;
+      border-radius: 20px;
+      padding: 20px;
+      margin: 25px 0;
+    }
+
+    .level {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .xp {
+      color: #fbbf24;
+    }
+
+    .progress {
+      height: 12px;
+      background: #374151;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 68%;
+      height: 100%;
+      background: #f59e0b;
+    }
+
+    .streak {
+      margin-top: 15px;
+      color: #fb923c;
+    }
+
+    .quest {
+      background: #1f2937;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .quest-title {
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    .reward {
+      color: #fbbf24;
+      font-size: 14px;
+    }
+
+    button {
+      border: none;
+      background: #f59e0b;
+      color: #111827;
+      font-weight: bold;
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.96);
+    }
+
+    .completed {
+      opacity: 0.5;
+    }
+
+    .completed button {
+      background: #374151;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <h1>⚔️ QuestDay</h1>
+    <p class="subtitle">Твои задачи — твои квесты</p>
+
+    <div class="stats">
+
+      <div class="level">
+        <strong>⭐ Уровень 3</strong>
+        <span class="xp">340 / 500 XP</span>
+      </div>
+
+      <div class="progress">
+        <div class="progress-bar"></div>
+      </div>
+
+      <div class="streak">
+        🔥 Серия: 7 дней
+      </div>
+
+    </div>
+
+    <h2>⚔️ Квесты на сегодня</h2>
+
+    <div class="quest">
+
+      <div>
+        <div class="quest-title">
+          🥤 Выпить воды
+        </div>
+
+        <div class="reward">
+          +10 XP
+        </div>
+      </div>
+
+      <button onclick="completeQuest(this, 10)">
+        Выполнить
+      </button>
+
+    </div>
+
+    <div class="quest">
+
+      <div>
+        <div class="quest-title">
+          🏃 20 минут спорта
+        </div>
+
+        <div class="reward">
+          +30 XP
+        </div>
+      </div>
+
+      <button onclick="completeQuest(this, 30)">
+        Выполнить
+      </button>
+
+    </div>
+
+    <div class="quest">
+
+      <div>
+        <div class="quest-title">
+          📚 Читать 10 страниц
+        </div>
+
+        <div class="reward">
+          +20 XP
+        </div>
+      </div>
+
+      <button onclick="completeQuest(this, 20)">
+        Выполнить
+      </button>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    function completeQuest(button, xp) {
+
+      const quest = button.parentElement;
+
+      if (quest.classList.contains("completed")) {
+        return;
+      }
+
+      quest.classList.add("completed");
+
+      button.innerText = "✓ Выполнено";
+
+      alert("Квест выполнен! +" + xp + " XP");
+
+    }
+
+  </script>
+
+</body>
+</html>
