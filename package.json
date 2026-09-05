@@ -1,0 +1,7 @@
+{
+  "name": "questday",
+  "version": "2.0.0",
+  "private": true,
+  "description": "QuestDay Telegram Mini App — RPG daily quests",
+  "type": "module"
+}
