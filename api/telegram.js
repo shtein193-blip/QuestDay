@@ -1,6 +1,28 @@
 const APP_URL = 'https://quest-day-six.vercel.app';
 export const runtime = 'nodejs';
 
+
+async function registerTelegramUser(user) {
+  const url = process.env.KV_REST_API_URL || process.env.KV_URL || process.env.REDIS_URL;
+  const token = process.env.KV_REST_API_TOKEN;
+  if (!url || !token || !user?.id) return;
+  const base = String(url).replace(/\/$/, '');
+  const headers = { Authorization: `Bearer ${token}` };
+  const id = encodeURIComponent(String(user.id));
+  const set = await fetch(`${base}/sadd/questday:users/${id}`, { headers });
+  if (!set.ok) throw new Error(`KV user registration failed: ${set.status}`);
+  const key = encodeURIComponent(`questday:user:${user.id}`);
+  const exists = await fetch(`${base}/exists/${key}`, { headers });
+  if (!exists.ok) throw new Error(`KV profile check failed: ${exists.status}`);
+  const ej = await exists.json();
+  if (Number(ej.result || 0) === 0) {
+    const profile = { version:6, updatedAt:Date.now(), level:1,xp:0,totalXP:0,totalCompleted:0,streak:0,maxStreak:0,lastCompletedDate:null,completedDates:[],unlockedAchievements:{},quests:[],notes:{},stats:{strength:1,intelligence:1,endurance:1,discipline:1},profile:{name:'',age:null,height:null,weight:null,gender:'',goal:'balance',classId:null},user:{id:user.id,name:[user.first_name,user.last_name].filter(Boolean).join(' ')||'Искатель',username:user.username||null,language:user.language_code||'ru'},notifications:{wisdomDate:null},questScore:0,coins:0,title:'Новичок',boss:{weekKey:null,damage:0,defeated:false,rewardClaimed:false},bossesDefeated:0,friends:[],referral:{invitedBy:null,rewardClaimed:false}};
+    const value = encodeURIComponent(JSON.stringify(profile));
+    const saved = await fetch(`${base}/set/${key}/${value}`, { headers });
+    if (!saved.ok) throw new Error(`KV profile creation failed: ${saved.status}`);
+  }
+}
+
 async function telegram(method, payload) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) throw new Error('TELEGRAM_BOT_TOKEN is missing');
@@ -30,6 +52,7 @@ export default async function handler(req, res) {
     const chatId = message?.chat?.id;
     const text = message?.text || '';
     if (!chatId) return res.status(200).json({ ok: true });
+    if (message?.from?.id) await registerTelegramUser(message.from);
 
     const reply = {
       chat_id: chatId,

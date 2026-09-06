@@ -39,17 +39,6 @@ async function registerUser(id) {
   if (!r.ok) throw new Error(`KV users ${r.status}`);
 }
 
-async function updateLeaderboard(id, score) {
-  const n = Number(score || 0);
-  if (n <= 0) return;
-  const r = await fetch(`${String(url).replace(/\/$/, '')}/zadd/questday:leaderboard/${encodeURIComponent(n)}/${encodeURIComponent(String(id))}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  if (!r.ok) {
-    const t = await r.text();
-    throw new Error(`KV leaderboard ${r.status}: ${t.slice(0,120)}`);
-  }
-}
 
 export default async function handler(req) {
   if (!url || !token || !process.env.TELEGRAM_BOT_TOKEN) {
@@ -79,8 +68,7 @@ export default async function handler(req) {
           data.updatedAt = Date.now();
           await kv('set', key, JSON.stringify(data));
         }
-        await updateLeaderboard(user.id, data.questScore);
-      }
+        }
       return Response.json({ ok: true, data });
     }
     if (req.method === 'POST') {
@@ -97,7 +85,6 @@ export default async function handler(req) {
       }
       body.data.user = { ...(body.data.user || {}), id: user.id, name: [user.first_name, user.last_name].filter(Boolean).join(' ') || body.data.user?.name || 'Искатель', username: user.username || null, language: user.language_code || 'ru' };
       await kv('set', key, JSON.stringify(body.data));
-      await updateLeaderboard(user.id, body.data.questScore);
       return Response.json({ ok: true, data: body.data });
     }
     return Response.json({ error: 'Method not allowed' }, { status: 405, headers: { Allow: 'GET, POST' } });

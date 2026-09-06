@@ -55,3 +55,7 @@ Every authenticated Mini App open registers the Telegram user in Redis set `ques
 
 ## 2.7.4
 Leaderboard diagnostics and robust Upstash env fallback.
+
+
+## QuestDay 2.7.6
+Leaderboard architecture simplified: Telegram /start registers users in Redis, Mini App profile sync updates progress, and the global rating reads the questday:users directory and profiles directly.
