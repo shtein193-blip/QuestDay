@@ -3,8 +3,8 @@ import crypto from 'node:crypto';
 const MAX_AGE = 24 * 60 * 60;
 const REFERRAL_REWARD = 100; // Quest Coins for the inviter
 const MAX_FRIENDS = 50;
-const url = process.env.KV_REST_API_URL;
-const token = process.env.KV_REST_API_TOKEN;
+const url = process.env.KV_REST_API_URL || process.env.KV_URL || process.env.REDIS_URL;
+const token = process.env.KV_REST_API_TOKEN || process.env.KV_REST_API_READ_ONLY_TOKEN;
 
 function validateInitData(raw, botToken) {
   if (!raw || !botToken) return null;
@@ -20,9 +20,13 @@ function validateInitData(raw, botToken) {
 }
 
 async function kv(command, ...args) {
-  const r = await fetch(`${url}/${command}/${args.map(encodeURIComponent).join('/')}`, { headers: { Authorization: `Bearer ${token}` } });
-  if (!r.ok) throw new Error(`KV ${r.status}`);
-  return r.json();
+  const endpoint = `${String(url).replace(/\/$/, '')}/${command}/${args.map(encodeURIComponent).join('/')}`;
+  const r = await fetch(endpoint, { headers: { Authorization: `Bearer ${token}` } });
+  const text = await r.text();
+  let j;
+  try { j = text ? JSON.parse(text) : {}; } catch { j = { error: text }; }
+  if (!r.ok || j.error) throw new Error(`KV ${r.status}: ${String(j.error || j.message || 'request failed').slice(0,120)}`);
+  return j;
 }
 
 async function getProfile(id) {
@@ -31,17 +35,17 @@ async function getProfile(id) {
 }
 
 async function registerUser(id) {
-  const r = await fetch(`${url}/sadd/questday:users/${encodeURIComponent(String(id))}`, {
+  const r = await fetch(`${String(url).replace(/\/$/, '')}/sadd/questday:users/${encodeURIComponent(String(id))}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
-  if (!r.ok) throw new Error(`KV sadd ${r.status}`);
+  if (!r.ok) { const t = await r.text(); throw new Error(`KV sadd ${r.status}: ${t.slice(0,100)}`); }
 }
 
 async function getRegisteredUserIds() {
-  const r = await fetch(`${url}/smembers/questday:users`, {
+  const r = await fetch(`${String(url).replace(/\/$/, '')}/smembers/questday:users`, {
     headers: { Authorization: `Bearer ${token}` }
   });
-  if (!r.ok) throw new Error(`KV smembers ${r.status}`);
+  if (!r.ok) { const t = await r.text(); throw new Error(`KV smembers ${r.status}: ${t.slice(0,100)}`); }
   const j = await r.json();
   if (j.error) throw new Error(`KV smembers: ${j.error}`);
   return Array.isArray(j.result) ? j.result.map(String).filter(id => /^\d+$/.test(id)) : [];
@@ -51,17 +55,17 @@ async function updateLeaderboard(id, score) {
   const n = Number(score || 0);
   // Keep a sorted-set index so future leaderboard reads are fast and do not
   // need to scan every profile. Zero-score users are removed from the index.
-  const r = await fetch(`${url}/zadd/questday:leaderboard/${encodeURIComponent(n)}/${encodeURIComponent(String(id))}`, {
+  const r = await fetch(`${String(url).replace(/\/$/, '')}/zadd/questday:leaderboard/${encodeURIComponent(n)}/${encodeURIComponent(String(id))}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
-  if (!r.ok) throw new Error(`KV zadd ${r.status}`);
+  if (!r.ok) { const t = await r.text(); throw new Error(`KV zadd ${r.status}: ${t.slice(0,100)}`); }
 }
 
 async function getLeaderboardIds(limit = 100) {
-  const r = await fetch(`${url}/zrevrange/questday:leaderboard/0/${Math.max(0, limit - 1)}/WITHSCORES`, {
+  const r = await fetch(`${String(url).replace(/\/$/, '')}/zrevrange/questday:leaderboard/0/${Math.max(0, limit - 1)}/WITHSCORES`, {
     headers: { Authorization: `Bearer ${token}` }
   });
-  if (!r.ok) throw new Error(`KV zrevrange ${r.status}`);
+  if (!r.ok) { const t = await r.text(); throw new Error(`KV zrevrange ${r.status}: ${t.slice(0,100)}`); }
   const j = await r.json();
   if (j.error) throw new Error(`KV zrevrange: ${j.error}`);
   const result = Array.isArray(j.result) ? j.result : [];
@@ -192,6 +196,6 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   } catch (error) {
     console.error('Friends API error:', error);
-    return res.status(500).json({ ok: false, error: 'Friends service error', detail: error?.message ? String(error.message).slice(0, 160) : 'Unknown error' });
+    return res.status(500).json({ ok: false, error: 'Friends service error', detail: error?.message ? String(error.message).slice(0, 220) : 'Unknown error' });
   }
 }
