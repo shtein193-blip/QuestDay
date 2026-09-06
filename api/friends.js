@@ -4,7 +4,7 @@ const MAX_AGE = 24 * 60 * 60;
 const REFERRAL_REWARD = 100; // Quest Coins for the inviter
 const MAX_FRIENDS = 50;
 const url = process.env.KV_REST_API_URL || process.env.KV_URL || process.env.REDIS_URL;
-const token = process.env.KV_REST_API_TOKEN || process.env.KV_REST_API_READ_ONLY_TOKEN;
+const token = process.env.KV_REST_API_TOKEN;
 
 function validateInitData(raw, botToken) {
   if (!raw || !botToken) return null;
@@ -109,7 +109,7 @@ function publicPlayer(id, profile) {
 }
 
 export default async function handler(req, res) {
-  if (!url || !token || !process.env.TELEGRAM_BOT_TOKEN) return res.status(503).json({ error: 'Cloud storage is not configured.' });
+  if (!url || !token || !process.env.TELEGRAM_BOT_TOKEN) return res.status(503).json({ ok: false, error: 'Cloud storage is not configured.', detail: 'Need KV_REST_API_URL, KV_REST_API_TOKEN and TELEGRAM_BOT_TOKEN.' });
   const auth = req.headers.authorization || '';
   if (!auth.startsWith('tma ')) return res.status(401).json({ error: 'Unauthorized' });
 
